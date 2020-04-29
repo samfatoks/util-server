@@ -3,6 +3,7 @@ use crate::error::Error;
 use crate::state::State;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub struct Request {
@@ -24,15 +25,20 @@ impl Request {
         _peer_addr: SocketAddr,
         _state: &Arc<State>,
     ) -> Result<Response, Error> {
-        let response = match self.clone().command {
+        let execution_time = Instant::now();
+        let result = match self.clone().command {
             Command::RND(rnd_type) => rnd_type.generate(self.rnd_size.unwrap()),
             Command::HASH(algo) => algo.hash(self.text.clone().unwrap()),
             Command::ENCODE(algo) => algo.encode(self.text.clone().unwrap()),
             Command::DECODE(algo) => algo.decode(self.text.clone().unwrap()),
             Command::CHECKSUM(algo) => algo.calculate_checksum(self.text.clone().unwrap()),
         };
-        response
-        //response.and_then(|r| Ok(serde_json::to_string(&r).unwrap()))
+        result.and_then(|r| {
+            Ok(Response::new_successful(
+                r,
+                execution_time.elapsed().as_micros(),
+            ))
+        })
     }
 }
 

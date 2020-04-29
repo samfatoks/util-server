@@ -1,12 +1,20 @@
-use super::Response;
 use crate::error::Error;
 use crate::util::checksum_util;
-use std::time::Instant;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ChecksumAlgorithm {
     CRC16,
     CRC32,
+}
+
+impl ChecksumAlgorithm {
+    pub fn calculate_checksum(&self, text: String) -> Result<String, Error> {
+        let result = match self {
+            ChecksumAlgorithm::CRC16 => checksum_util::crc16(&text),
+            ChecksumAlgorithm::CRC32 => checksum_util::crc32(&text),
+        };
+        Ok(result)
+    }
 }
 
 impl std::str::FromStr for ChecksumAlgorithm {
@@ -17,19 +25,5 @@ impl std::str::FromStr for ChecksumAlgorithm {
             "CRC32" => Ok(ChecksumAlgorithm::CRC32),
             _ => Err(Error::InvalidChecksumAlgo),
         }
-    }
-}
-
-impl ChecksumAlgorithm {
-    pub fn calculate_checksum(&self, text: String) -> Result<Response, Error> {
-        let execution_time = Instant::now();
-        let value = match self {
-            ChecksumAlgorithm::CRC16 => checksum_util::crc16(&text),
-            ChecksumAlgorithm::CRC32 => checksum_util::crc32(&text),
-        };
-        Ok(Response::new_successful(
-            value,
-            execution_time.elapsed().as_micros(),
-        ))
     }
 }
