@@ -1,0 +1,29 @@
+[package]
+name = "util-server"
+version = "0.1.0"
+authors = ["Samuel Fatoki <samfatoks@gmail.com>"]
+description = "A small tcp server for performing common utility functions"
+repository = "https://github.com/samfatoks/util-server"
+license = "MIT"
+edition = "2018"
+keywords = ["utility", "tokio", "tcp", "hashing", "encoding", "decoding", "random", "checksum"]
+
+[profile.release]
+lto = true
+opt-level = 'z'
+codegen-units = 1
+panic = 'abort'
+
+
+[dependencies]
+tokio = { version = "0.2", features = ["rt-threaded", "tcp", "macros", "sync"] }
+tokio-util = { version = "0.3", features = ["codec"] }
+rand = "0.7"
+futures = "0.3"
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.42"
+ring = "0.16.12"
+base64 = "0.12.0"
+hex = "0.4"
+crc16 = "0.4"
+crc32fast = "1.2.0"
