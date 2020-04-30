@@ -104,7 +104,7 @@ mod tests {
         if let Err(err) = request_str.parse::<Request>() {
             assert_eq!(
                 err.to_string(),
-                "Invalid Command. Expecting RND, HASH, ENCODE or DECODE"
+                "Invalid Command. Expecting RND, HASH, ENCODE, DECODE, CHECKSUM"
             );
         }
     }
@@ -114,7 +114,7 @@ mod tests {
         if let Err(err) = request_str.parse::<Request>() {
             assert_eq!(
                 err.to_string(),
-                "Invalid Random Mode. Expecting ALPHA, NUM or ALPHANUM"
+                "Invalid Random Mode. Expecting ALPHA, NUM, ALPHANUM, PASSWORD"
             );
         }
     }
@@ -124,7 +124,18 @@ mod tests {
         if let Err(err) = request_str.parse::<Request>() {
             assert_eq!(
                 err.to_string(),
-                "Invalid Hashing Algorithm. Expecting MD5, SHA1, SHA256 or SHA512"
+                "Invalid Hashing Algorithm. Expecting SHA256 or SHA512"
+            );
+        }
+    }
+
+    #[test]
+    fn invalid_checksum_algorithm() {
+        let request_str = "CHECKSUM BBB This is a simple message";
+        if let Err(err) = request_str.parse::<Request>() {
+            assert_eq!(
+                err.to_string(),
+                "Invalid Checksum Algorithm. Expecting CRC32 or CRC32"
             );
         }
     }
